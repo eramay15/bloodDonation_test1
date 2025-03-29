@@ -1,8 +1,10 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-// Define the type for the post object
+// Define type for blog posts
 type Post = {
   id: number;
   title: string;
@@ -12,11 +14,10 @@ type Post = {
 };
 
 export default function BlogPage() {
-  // Fix: Initialize as null or an array of Post objects
-  const [posts, setPosts] = useState<Post[] | null>(null); // Now accepts either an array or null
+  const [posts, setPosts] = useState<Post[]>([]); // Fix: Initialized as empty array to avoid hydration errors
 
   useEffect(() => {
-    // Simulating API fetch for blog posts
+    // Simulating API fetch delay
     setTimeout(() => {
       setPosts([
         {
@@ -60,13 +61,13 @@ export default function BlogPage() {
       </p>
 
       {/* Blog Cards */}
-      {posts ? (
+      {posts.length > 0 ? (
         <div className="grid md:grid-cols-3 gap-8 mt-10">
-          {posts.map((post) => (
+          {posts.map((post, index) => (
             <motion.div
               key={post.id}
               whileHover={{ scale: 1.05 }}
-              className="bg-white shadow-lg rounded-xl overflow-hidden"
+              className="bg-white shadow-lg rounded-xl overflow-hidden flex flex-col justify-between"
             >
               <Image
                 src={post.image}
@@ -74,22 +75,25 @@ export default function BlogPage() {
                 width={500}
                 height={300}
                 className="w-full h-48 object-cover"
+                priority={index === 0} // Optimize first image for faster loading
               />
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-grow">
                 <h2 className="text-2xl font-bold text-gray-900">{post.title}</h2>
-                <p className="text-gray-700 mt-2">{post.description}</p>
-                <button
-                  className="mt-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
-                  onClick={() => alert("Navigating to full blog post")}
-                >
-                  Read More
-                </button>
+                <p className="text-gray-700 mt-2 flex-grow">{post.description}</p>
+                <div className="mt-auto">
+                  <button
+                    className="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
+                    onClick={() => alert("Navigating to full blog post")}
+                  >
+                    Read More
+                  </button>
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-500 mt-10">Loading posts...</p> // Loading state
+        <p className="text-center text-gray-500 mt-10">Loading posts...</p>
       )}
     </motion.div>
   );
