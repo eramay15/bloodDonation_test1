@@ -1,15 +1,23 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
+// Define the type for the post object
+type Post = {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  published: boolean;
+};
+
 export default function BlogPage() {
-  const [posts, setPosts] = useState(null); // Fix: Initialize as null to prevent hydration issues
+  // Fix: Initialize as null or an array of Post objects
+  const [posts, setPosts] = useState<Post[] | null>(null); // Now accepts either an array or null
 
   useEffect(() => {
     // Simulating API fetch for blog posts
-    setTimeout(() => { // Simulating a fetch delay
+    setTimeout(() => {
       setPosts([
         {
           id: 1,
@@ -27,7 +35,7 @@ export default function BlogPage() {
         },
         {
           id: 3,
-          title: "Who Can Donate Blood?", 
+          title: "Who Can Donate Blood?",
           description: "Learn about eligibility criteria for blood donation.",
           image: "/images/eligibility.jpg",
           published: true,
@@ -58,7 +66,7 @@ export default function BlogPage() {
             <motion.div
               key={post.id}
               whileHover={{ scale: 1.05 }}
-              className="bg-white shadow-lg rounded-xl overflow-hidden flex flex-col h-full" // Added flex and height
+              className="bg-white shadow-lg rounded-xl overflow-hidden"
             >
               <Image
                 src={post.image}
@@ -67,24 +75,21 @@ export default function BlogPage() {
                 height={300}
                 className="w-full h-48 object-cover"
               />
-              <div className="p-6 flex flex-col flex-grow">
+              <div className="p-6">
                 <h2 className="text-2xl font-bold text-gray-900">{post.title}</h2>
-                <p className="text-gray-700 mt-2 flex-grow">{post.description}</p> 
-                {/* flex-grow ensures button stays at bottom */}
-                <div className="mt-auto"> 
-                  <button
-                    className="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
-                    onClick={() => alert("Navigating to full blog post")}
-                  >
-                    Read More
-                  </button>
-                </div>
+                <p className="text-gray-700 mt-2">{post.description}</p>
+                <button
+                  className="mt-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
+                  onClick={() => alert("Navigating to full blog post")}
+                >
+                  Read More
+                </button>
               </div>
             </motion.div>
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-500 mt-10">Loading posts...</p>
+        <p className="text-center text-gray-500 mt-10">Loading posts...</p> // Loading state
       )}
     </motion.div>
   );
